@@ -11,56 +11,74 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.benwi.assignment1.MainActivity">
 
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:id="@+id/genderText"
+        android:hint="Gender"
+        android:layout_below="@+id/nameText"
+        android:layout_alignLeft="@+id/nameText"
+        android:layout_alignStart="@+id/nameText" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:ems="10"
+        android:id="@+id/ageText"
+        android:hint="Age"
+        android:layout_below="@+id/genderText"
+        android:layout_alignLeft="@+id/genderText"
+        android:layout_alignStart="@+id/genderText" />
+
     <TextView
-        android:text="Enter your run distance and time:"
+        android:text="Welcome! To begin, please enter your information below"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/textView3"
-        android:layout_below="@+id/textView2"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textPersonName"
-        android:ems="10"
-        android:layout_below="@+id/textView3"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:id="@+id/distanceEditText"
-        android:hint="Distance" />
-
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textPersonName"
-        android:ems="10"
-        android:layout_below="@+id/distanceEditText"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:id="@+id/timeEditText"
-        android:hint="Time" />
-
-    <Button
-        android:text="SUBMIT"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/submitButton"
-        android:layout_below="@+id/timeEditText"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:onClick="submitRun" />
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/textView2"
+        android:textAlignment="center" />
 
     <ImageView
         android:layout_width="100dp"
-        app:srcCompat="@drawable/jogging"
-        android:id="@+id/jogImageView"
-        android:adjustViewBounds="false"
         android:layout_height="100dp"
-        android:layout_alignBottom="@+id/timeEditText"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginRight="28dp"
-        android:layout_marginEnd="28dp" />
+        app:srcCompat="@drawable/profile"
+        android:id="@+id/imageView"
+        android:layout_marginTop="8dp"
+        android:layout_below="@+id/textView2"
+        android:layout_centerHorizontal="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:layout_marginTop="12dp"
+        android:id="@+id/nameText"
+        android:hint="Name"
+        android:layout_below="@+id/imageView"
+        android:layout_centerHorizontal="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:ems="10"
+        android:id="@+id/weightText"
+        android:hint="Weight (lbs)"
+        android:layout_below="@+id/ageText"
+        android:layout_alignLeft="@+id/ageText"
+        android:layout_alignStart="@+id/ageText" />
+
+    <Button
+        android:text="BEGIN"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/submitButton"
+        android:layout_below="@+id/weightText"
+        android:layout_centerHorizontal="true"
+        android:onClick="newProfile" />
 </RelativeLayout>
