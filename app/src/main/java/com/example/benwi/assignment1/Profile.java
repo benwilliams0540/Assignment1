@@ -20,4 +20,8 @@ public class Profile {
         age = a;
         weight = w;
     }
+
+    public String toString(){
+        return "";
+    }
 }
