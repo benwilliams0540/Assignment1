@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.audiofx.BassBoost;
 import android.os.Build;
 import android.preference.PreferenceActivity;
 import android.support.annotation.NonNull;
@@ -15,9 +16,14 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.ShareCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -36,35 +42,90 @@ import static android.R.id.list;
 import static com.example.benwi.assignment1.R.id.nameText;
 
 public class MainActivity extends AppCompatActivity {
-
     public static SharedPreferences sharedPreferences;
-    public LocationManager locationManager;
-    public LocationListener locationListener;
-    public static Location currentLocation;
 
     public enum Gender {
         male, female
     }
 
-    public static ArrayList<String> users = new ArrayList<>();
+    public static Location currentLocation;
+    private LocationManager locationManager;
+    private LocationListener locationListener;
 
+    private static ArrayList<String> users = new ArrayList<>();
     public static Profile profile;
-    public ArrayAdapter<String> adapter;
-    public ListView usersListView;
+    private ArrayAdapter<String> adapter;
+    private ListView usersListView;
+
+    private ListView mDrawerList;
+    private ArrayAdapter<String> mAdapter;
+    private ActionBarDrawerToggle mDrawerToggle;
+    private DrawerLayout mDrawerLayout;
+    private String mActivityTitle;
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+    public boolean onOptionsItemSelected(MenuItem item) {
+        super.onOptionsItemSelected(item);
+
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
         }
+        return false;
+    }
+
+    private void addDrawerItems() {
+        String[] menuItems = {"Information"};
+        mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, menuItems);
+        mDrawerList.setAdapter(mAdapter);
+    }
+
+    private void setupDrawer() {
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
+
+            /** Called when a drawer has settled in a completely open state. */
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                getSupportActionBar().setTitle("Navigation!");
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+
+            /** Called when a drawer has settled in a completely closed state. */
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                getSupportActionBar().setTitle(mActivityTitle);
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+        };
+
+        mDrawerToggle.setDrawerIndicatorEnabled(true);
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mDrawerList = (ListView)findViewById(R.id.navList);
+        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id){
+                switch (position){
+                    case 0:
+                        startActivity(new Intent(MainActivity.this, InfoActivity.class));
+                        break;
+                    case 1:
+                        startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+                        break;
+                }
+            }
+        });
+        mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
+        mActivityTitle = getTitle().toString();
+        addDrawerItems();
+        setupDrawer();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
 
         users.clear();
         sharedPreferences = this.getSharedPreferences("com.", Context.MODE_PRIVATE);
@@ -137,6 +198,21 @@ public class MainActivity extends AppCompatActivity {
         focusLayout.requestFocus();
     }
 
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mDrawerToggle.syncState();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+        }
+    }
+
     public void newProfile(View view){
         EditText nameText = (EditText) findViewById(R.id.nameText);
         EditText genderText = (EditText) findViewById(R.id.genderText);
@@ -193,18 +269,18 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    protected ListView getListView(){
+    private ListView getListView(){
         if (usersListView == null){
             usersListView = (ListView) findViewById(R.id.usersList);
         }
         return usersListView;
     }
 
-    protected void setListAdapter(ListAdapter adapter){
+    private void setListAdapter(ListAdapter adapter){
         getListView().setAdapter(adapter);
     }
 
-    protected ListAdapter getListAdapter(){
+    private ListAdapter getListAdapter(){
         ListAdapter adapter = getListView().getAdapter();
         if (adapter instanceof HeaderViewListAdapter) {
             return ((HeaderViewListAdapter)adapter).getWrappedAdapter();
