@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.HeaderViewListAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -25,11 +26,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class RunActivity extends AppCompatActivity {
-    private ListView mDrawerList;
-    private ArrayAdapter<String> mAdapter;
-    private ActionBarDrawerToggle mDrawerToggle;
-    private DrawerLayout mDrawerLayout;
-    private String mActivityTitle;
+//    private ListView mDrawerList;
+//    private ArrayAdapter<String> mAdapter;
+//    private ActionBarDrawerToggle mDrawerToggle;
+//    private DrawerLayout mDrawerLayout;
+//    private String mActivityTitle;
 
     private Location startLocation, endLocation;
     private Handler customHandler = new Handler();
@@ -37,6 +38,8 @@ public class RunActivity extends AppCompatActivity {
     private TextView timerValue;
     private TextView distanceValue;
     private TextView calorieValue;
+
+    private Button startButton;
 
     private long startTime = 0L;
     private long timeInMilliseconds = 0L;
@@ -59,62 +62,62 @@ public class RunActivity extends AppCompatActivity {
 //        }
 //        return false;
 //    }
-
-    private void addDrawerItems() {
-        String[] menuItems = {"Information"};
-        mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, menuItems);
-        mDrawerList.setAdapter(mAdapter);
-    }
-
-    private void setupDrawer() {
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
-
-            /** Called when a drawer has settled in a completely open state. */
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-                getSupportActionBar().setTitle("Navigation!");
-                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-            }
-
-            /** Called when a drawer has settled in a completely closed state. */
-            public void onDrawerClosed(View view) {
-                super.onDrawerClosed(view);
-                getSupportActionBar().setTitle(mActivityTitle);
-                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-            }
-        };
-
-        mDrawerToggle.setDrawerIndicatorEnabled(true);
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
-    }
+//
+//    private void addDrawerItems() {
+//        String[] menuItems = {"Information"};
+//        mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, menuItems);
+//        mDrawerList.setAdapter(mAdapter);
+//    }
+//
+//    private void setupDrawer() {
+//        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
+//
+//            /** Called when a drawer has settled in a completely open state. */
+//            public void onDrawerOpened(View drawerView) {
+//                super.onDrawerOpened(drawerView);
+//                getSupportActionBar().setTitle("Navigation!");
+//                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+//            }
+//
+//            /** Called when a drawer has settled in a completely closed state. */
+//            public void onDrawerClosed(View view) {
+//                super.onDrawerClosed(view);
+//                getSupportActionBar().setTitle(mActivityTitle);
+//                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+//            }
+//        };
+//
+//        mDrawerToggle.setDrawerIndicatorEnabled(true);
+//        mDrawerLayout.setDrawerListener(mDrawerToggle);
+//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_run);
 
-        mDrawerList = (ListView)findViewById(R.id.navList);
-        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id){
-                switch (position){
-                    case 0:
-                        startActivity(new Intent(RunActivity.this, InfoActivity.class));
-                        break;
-                    case 1:
-                        startActivity(new Intent(RunActivity.this, SettingsActivity.class));
-                        break;
-                }
-            }
-        });
-        mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout2);
-        mActivityTitle = getTitle().toString();
-
-        //addDrawerItems();
-        //setupDrawer();
-
-        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        //getSupportActionBar().setHomeButtonEnabled(true);
+//        mDrawerList = (ListView)findViewById(R.id.navList2);
+//        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id){
+//                switch (position){
+//                    case 0:
+//                        startActivity(new Intent(RunActivity.this, InfoActivity.class));
+//                        break;
+//                    case 1:
+//                        startActivity(new Intent(RunActivity.this, SettingsActivity.class));
+//                        break;
+//                }
+//            }
+//        });
+//        mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout2);
+//        mActivityTitle = getTitle().toString();
+//
+//        addDrawerItems();
+//        setupDrawer();
+//
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        getSupportActionBar().setHomeButtonEnabled(true);
 
         runHistory.clear();
         try {
@@ -148,6 +151,7 @@ public class RunActivity extends AppCompatActivity {
         timerValue = (TextView) findViewById(R.id.timerValue);
         distanceValue = (TextView) findViewById(R.id.distanceValue);
         calorieValue = (TextView) findViewById(R.id.calorieValue);
+        startButton = (Button) findViewById(R.id.startButton);
     }
 
 //    @Override
@@ -160,17 +164,34 @@ public class RunActivity extends AppCompatActivity {
         startTime = SystemClock.uptimeMillis();
         startLocation = MainActivity.currentLocation;
         endLocation = MainActivity.currentLocation;
-        customHandler.postDelayed(updateTimerThread, 0);
-        customHandler.postDelayed(updateDistanceThread, 0);
-        customHandler.postDelayed(updateCaloriesThread, 0);
+
+        timeSwapBuff += timeInMilliseconds;
+        customHandler.removeCallbacks(updateTimerThread);
+        customHandler.removeCallbacks(updateDistanceThread);
+        customHandler.removeCallbacks(updateCaloriesThread);
     }
 
     public void endRun(View view){
-        timeSwapBuff += timeInMilliseconds;
+        //timeSwapBuff += timeInMilliseconds;
         endLocation = MainActivity.currentLocation;
         customHandler.removeCallbacks(updateTimerThread);
         customHandler.removeCallbacks(updateDistanceThread);
         customHandler.removeCallbacks(updateCaloriesThread);
+    }
+
+    public void saveRun(View view){
+        int currentRun = runHistory.size()+ 1;
+        String runName = "Run " + currentRun;
+        runHistory.add(runName);
+        try {
+            MainActivity.sharedPreferences.edit().putString(MainActivity.profile.name + "History", ObjectSerializer.serialize(runHistory)).apply();
+            MainActivity.sharedPreferences.edit().putLong(MainActivity.profile.name + runName + "time", updatedTime).apply();
+            MainActivity.sharedPreferences.edit().putFloat(MainActivity.profile.name + runName + "distance", distanceMiles).apply();
+            MainActivity.sharedPreferences.edit().putFloat(MainActivity.profile.name + runName + "calories", calories).apply();
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+        adapter.notifyDataSetChanged();
     }
 
     private ListView getListView(){
