@@ -8,10 +8,7 @@ import android.os.SystemClock;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -26,11 +23,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class RunActivity extends AppCompatActivity {
-//    private ListView mDrawerList;
-//    private ArrayAdapter<String> mAdapter;
-//    private ActionBarDrawerToggle mDrawerToggle;
-//    private DrawerLayout mDrawerLayout;
-//    private String mActivityTitle;
+    private ListView mDrawerList;
+    private ArrayAdapter<String> mAdapter;
+    private ActionBarDrawerToggle mDrawerToggle;
+    private DrawerLayout mDrawerLayout;
 
     private Location startLocation, endLocation;
     private Handler customHandler = new Handler();
@@ -39,12 +35,10 @@ public class RunActivity extends AppCompatActivity {
     private TextView distanceValue;
     private TextView calorieValue;
 
-    private Button startButton;
-
-    private long startTime = 0L;
     private long timeInMilliseconds = 0L;
     private long timeSwapBuff = 0L;
     private long updatedTime = 0L;
+    private long startTime = 0L;
 
     private float distanceMiles;
     private float calories;
@@ -53,76 +47,30 @@ public class RunActivity extends AppCompatActivity {
     private ArrayAdapter<String> adapter;
     private ListView runList;
 
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        super.onOptionsItemSelected(item);
-//
-//        if (mDrawerToggle.onOptionsItemSelected(item)) {
-//            return true;
-//        }
-//        return false;
-//    }
-//
-//    private void addDrawerItems() {
-//        String[] menuItems = {"Information"};
-//        mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, menuItems);
-//        mDrawerList.setAdapter(mAdapter);
-//    }
-//
-//    private void setupDrawer() {
-//        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
-//
-//            /** Called when a drawer has settled in a completely open state. */
-//            public void onDrawerOpened(View drawerView) {
-//                super.onDrawerOpened(drawerView);
-//                getSupportActionBar().setTitle("Navigation!");
-//                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-//            }
-//
-//            /** Called when a drawer has settled in a completely closed state. */
-//            public void onDrawerClosed(View view) {
-//                super.onDrawerClosed(view);
-//                getSupportActionBar().setTitle(mActivityTitle);
-//                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-//            }
-//        };
-//
-//        mDrawerToggle.setDrawerIndicatorEnabled(true);
-//        mDrawerLayout.setDrawerListener(mDrawerToggle);
-//    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_run);
 
-//        mDrawerList = (ListView)findViewById(R.id.navList2);
-//        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id){
-//                switch (position){
-//                    case 0:
-//                        startActivity(new Intent(RunActivity.this, InfoActivity.class));
-//                        break;
-//                    case 1:
-//                        startActivity(new Intent(RunActivity.this, SettingsActivity.class));
-//                        break;
-//                }
-//            }
-//        });
-//        mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout2);
-//        mActivityTitle = getTitle().toString();
-//
-//        addDrawerItems();
-//        setupDrawer();
-//
-//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-//        getSupportActionBar().setHomeButtonEnabled(true);
+        initializeDrawer();
+        initializeRuns();
 
+        timerValue = (TextView) findViewById(R.id.timerValue);
+        distanceValue = (TextView) findViewById(R.id.distanceValue);
+        calorieValue = (TextView) findViewById(R.id.calorieValue);
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mDrawerToggle.syncState();
+    }
+
+    private void initializeRuns(){
         runHistory.clear();
         try {
             runHistory = (ArrayList<String>) ObjectSerializer.deserialize(MainActivity.sharedPreferences.getString(MainActivity.profile.name + "History",
-                            ObjectSerializer.serialize(new ArrayList<String>())));
+                    ObjectSerializer.serialize(new ArrayList<String>())));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -147,18 +95,78 @@ public class RunActivity extends AppCompatActivity {
                 Log.i("Calories", Float.toString(runCalories));
             }
         });
-
-        timerValue = (TextView) findViewById(R.id.timerValue);
-        distanceValue = (TextView) findViewById(R.id.distanceValue);
-        calorieValue = (TextView) findViewById(R.id.calorieValue);
-        startButton = (Button) findViewById(R.id.startButton);
     }
 
-//    @Override
-//    protected void onPostCreate(Bundle savedInstanceState) {
-//        super.onPostCreate(savedInstanceState);
-//        mDrawerToggle.syncState();
-//    }
+    private  void initializeDrawer(){
+        mDrawerList = (ListView)findViewById(R.id.navList2);
+        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id){
+                switch (position){
+                    case 0:
+                        startActivity(new Intent(RunActivity.this, InfoActivity.class));
+                        break;
+                    case 1:
+                        startActivity(new Intent(RunActivity.this, InfoActivity.class));
+                        break;
+                }
+            }
+        });
+        mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout2);
+
+        addDrawerItems();
+        setupDrawer();
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setTitle("Run Tracker");
+    }
+
+    private void addDrawerItems() {
+        String[] menuItems = {"Information"};
+        mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, menuItems);
+        mDrawerList.setAdapter(mAdapter);
+    }
+
+    private void setupDrawer() {
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                getSupportActionBar().setTitle("Navigation");
+                invalidateOptionsMenu();
+            }
+
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                getSupportActionBar().setTitle("Run Tracker");
+                invalidateOptionsMenu();
+            }
+        };
+
+        mDrawerToggle.setDrawerIndicatorEnabled(true);
+        mDrawerLayout.addDrawerListener(mDrawerToggle);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        super.onOptionsItemSelected(item);
+
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        return false;
+    }
+
+    private ListView getListView(){
+        if (runList == null){
+            runList = (ListView) findViewById(R.id.usersList);
+        }
+        return runList;
+    }
+
+    private void setListAdapter(ListAdapter adapter){
+        getListView().setAdapter(adapter);
+    }
 
     public void startRun(View view){
         startTime = SystemClock.uptimeMillis();
@@ -166,13 +174,14 @@ public class RunActivity extends AppCompatActivity {
         endLocation = MainActivity.currentLocation;
 
         timeSwapBuff += timeInMilliseconds;
-        customHandler.removeCallbacks(updateTimerThread);
-        customHandler.removeCallbacks(updateDistanceThread);
-        customHandler.removeCallbacks(updateCaloriesThread);
+        customHandler.postDelayed(updateTimerThread, 0);
+        customHandler.postDelayed(updateDistanceThread, 0);
+        customHandler.postDelayed(updateCaloriesThread, 0);
+
     }
 
     public void endRun(View view){
-        //timeSwapBuff += timeInMilliseconds;
+        timeSwapBuff += timeInMilliseconds;
         endLocation = MainActivity.currentLocation;
         customHandler.removeCallbacks(updateTimerThread);
         customHandler.removeCallbacks(updateDistanceThread);
@@ -192,26 +201,6 @@ public class RunActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         adapter.notifyDataSetChanged();
-    }
-
-    private ListView getListView(){
-        if (runList == null){
-            runList = (ListView) findViewById(R.id.usersList);
-        }
-        return runList;
-    }
-
-    private void setListAdapter(ListAdapter adapter){
-        getListView().setAdapter(adapter);
-    }
-
-    private ListAdapter getListAdapter(){
-        ListAdapter adapter = getListView().getAdapter();
-        if (adapter instanceof HeaderViewListAdapter) {
-            return ((HeaderViewListAdapter)adapter).getWrappedAdapter();
-        } else {
-            return adapter;
-        }
     }
 
     private Runnable updateTimerThread = new Runnable(){

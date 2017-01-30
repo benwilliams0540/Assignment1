@@ -22,31 +22,10 @@ public class InfoActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        super.onOptionsItemSelected(item);
-
-        switch (item.getItemId()){
-            case R.id.appInfo:
-                startActivity(new Intent(InfoActivity.this, InfoActivity.class));
-                return true;
-            case R.id.appSettings:
-                startActivity(new Intent(InfoActivity.this, SettingsActivity.class));
-                return true;
-            case R.id.home:
-                finish();
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_info);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
     }
 
 }

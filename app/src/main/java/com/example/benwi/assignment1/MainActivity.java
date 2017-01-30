@@ -8,21 +8,15 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.media.audiofx.BassBoost;
 import android.os.Build;
-import android.preference.PreferenceActivity;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.ListFragment;
-import android.support.v4.app.ShareCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -36,132 +30,56 @@ import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
-
-import static android.R.id.list;
-import static com.example.benwi.assignment1.R.id.nameText;
 
 public class MainActivity extends AppCompatActivity {
     public static SharedPreferences sharedPreferences;
-
-    public enum Gender {
-        male, female
-    }
-
-    public static Location currentLocation;
-    private LocationManager locationManager;
-    private LocationListener locationListener;
-
-    private static ArrayList<String> users = new ArrayList<>();
-    public static Profile profile;
-    private ArrayAdapter<String> adapter;
-    private ListView usersListView;
 
     private ListView mDrawerList;
     private ArrayAdapter<String> mAdapter;
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout mDrawerLayout;
-    private String mActivityTitle;
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        super.onOptionsItemSelected(item);
+    public static Location currentLocation;
+    private LocationManager locationManager;
+    private LocationListener locationListener;
 
-        if (mDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-        return false;
+    public enum Gender {
+        male, female
     }
-
-    private void addDrawerItems() {
-        String[] menuItems = {"Information"};
-        mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, menuItems);
-        mDrawerList.setAdapter(mAdapter);
-    }
-
-    private void setupDrawer() {
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
-
-            /** Called when a drawer has settled in a completely open state. */
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-                getSupportActionBar().setTitle("Navigation!");
-                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-            }
-
-            /** Called when a drawer has settled in a completely closed state. */
-            public void onDrawerClosed(View view) {
-                super.onDrawerClosed(view);
-                getSupportActionBar().setTitle(mActivityTitle);
-                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-            }
-        };
-
-        mDrawerToggle.setDrawerIndicatorEnabled(true);
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
-    }
+    private static ArrayList<String> users = new ArrayList<>();
+    public static Profile profile;
+    private ArrayAdapter<String> adapter;
+    private ListView usersListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mDrawerList = (ListView)findViewById(R.id.navList);
-        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id){
-                switch (position){
-                    case 0:
-                        startActivity(new Intent(MainActivity.this, InfoActivity.class));
-                        break;
-                    case 1:
-                        startActivity(new Intent(MainActivity.this, SettingsActivity.class));
-                        break;
-                }
-            }
-        });
-        mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
-        mActivityTitle = getTitle().toString();
-        addDrawerItems();
-        setupDrawer();
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
+        initializeDrawer();
+        initializeUsers();
+        initializeGPS();
 
-        users.clear();
-        sharedPreferences = this.getSharedPreferences("com.", Context.MODE_PRIVATE);
-        try {
-            users = (ArrayList<String>) ObjectSerializer.deserialize(sharedPreferences.getString("users", ObjectSerializer.serialize(new ArrayList<String>())));
-        } catch (IOException e) {
-            e.printStackTrace();
+        RelativeLayout focusLayout = (RelativeLayout) findViewById(R.id.activity_main);
+        focusLayout.requestFocus();
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mDrawerToggle.syncState();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
         }
+    }
 
-//        SharedPreferences.Editor editor = sharedPreferences.edit();
-//        editor.clear();
-//        editor.commit();
-
-        if (usersListView == null){
-            usersListView = (ListView) findViewById(R.id.usersList);
-        }
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, users);
-        setListAdapter(adapter);
-
-        usersListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapter, View v, int position, long id){
-                String name = (String) adapter.getItemAtPosition(position);
-                String gender = sharedPreferences.getString(name + "Gender", "");
-                int age = sharedPreferences.getInt(name + "Age", 0);
-                int weight = sharedPreferences.getInt(name + "Weight", 0);
-
-                profile = new Profile(name, gender, age, weight);
-                Log.i("name", profile.name);
-                Log.i("gender", profile.gender.toString());
-                Log.i("age", "" + profile.age);
-                Log.i("weight", "" + profile.weight);
-                startActivity(new Intent(MainActivity.this, RunActivity.class));
-            }
-        });
-
+    private void initializeGPS(){
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         currentLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         locationListener = new LocationListener() {
@@ -181,36 +99,116 @@ public class MainActivity extends AppCompatActivity {
 
         };
 
-        // If device is running SDK < 23
         if (Build.VERSION.SDK_INT < 23) {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
         } else {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // ask for permission
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             } else {
-                // we have permission!
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
             }
         }
-
-        RelativeLayout focusLayout = (RelativeLayout) findViewById(R.id.activity_main);
-        focusLayout.requestFocus();
     }
 
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        mDrawerToggle.syncState();
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+    private void initializeUsers(){
+        users.clear();
+        sharedPreferences = this.getSharedPreferences("com.example.benwi.assignent1", Context.MODE_PRIVATE);
+        try {
+            users = (ArrayList<String>) ObjectSerializer.deserialize(sharedPreferences.getString("users", ObjectSerializer.serialize(new ArrayList<String>())));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
+        if (usersListView == null){
+            usersListView = (ListView) findViewById(R.id.usersList);
+        }
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, users);
+        setListAdapter(adapter);
+
+        usersListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapter, View v, int position, long id){
+                String name = (String) adapter.getItemAtPosition(position);
+                String gender = sharedPreferences.getString(name + "Gender", "");
+                int age = sharedPreferences.getInt(name + "Age", 0);
+                int weight = sharedPreferences.getInt(name + "Weight", 0);
+
+                profile = new Profile(name, gender, age, weight);
+                startActivity(new Intent(MainActivity.this, RunActivity.class));
+            }
+        });
+
+    }
+
+    private void initializeDrawer(){
+        mDrawerList = (ListView)findViewById(R.id.navList);
+        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id){
+                switch (position){
+                    case 0:
+                        startActivity(new Intent(MainActivity.this, InfoActivity.class));
+                        break;
+                    case 1:
+                        startActivity(new Intent(MainActivity.this, InfoActivity.class));
+                        break;
+                }
+            }
+        });
+        mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
+
+        addDrawerItems();
+        setupDrawer();
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setTitle("Run Tracker");
+    }
+
+    private void addDrawerItems() {
+        String[] menuItems = {"Information"};
+        mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, menuItems);
+        mDrawerList.setAdapter(mAdapter);
+    }
+
+    private void setupDrawer() {
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                getSupportActionBar().setTitle("Navigation");
+                invalidateOptionsMenu();
+            }
+
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                getSupportActionBar().setTitle("Run Tracker");
+                invalidateOptionsMenu();
+            }
+        };
+
+        mDrawerToggle.setDrawerIndicatorEnabled(true);
+        mDrawerLayout.addDrawerListener(mDrawerToggle);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        super.onOptionsItemSelected(item);
+
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        return false;
+    }
+
+    private ListView getListView(){
+        if (usersListView == null){
+            usersListView = (ListView) findViewById(R.id.usersList);
+        }
+        return usersListView;
+    }
+
+    private void setListAdapter(ListAdapter adapter){
+        getListView().setAdapter(adapter);
     }
 
     public void newProfile(View view){
@@ -266,26 +264,6 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(MainActivity.this, "Profile created", Toast.LENGTH_SHORT).show();
 
             startActivity(new Intent(MainActivity.this, RunActivity.class));
-        }
-    }
-
-    private ListView getListView(){
-        if (usersListView == null){
-            usersListView = (ListView) findViewById(R.id.usersList);
-        }
-        return usersListView;
-    }
-
-    private void setListAdapter(ListAdapter adapter){
-        getListView().setAdapter(adapter);
-    }
-
-    private ListAdapter getListAdapter(){
-        ListAdapter adapter = getListView().getAdapter();
-        if (adapter instanceof HeaderViewListAdapter) {
-            return ((HeaderViewListAdapter)adapter).getWrappedAdapter();
-        } else {
-            return adapter;
         }
     }
 }
