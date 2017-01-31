@@ -9,7 +9,7 @@
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/content_run"
+        android:id="@+id/content_history"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingBottom="@dimen/activity_vertical_margin"
@@ -17,31 +17,22 @@
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:paddingTop="@dimen/activity_vertical_margin"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:context="com.example.benwi.assignment1.RunActivity"
-        tools:showIn="@layout/activity_run"
-        android:clickable="false"
-        android:focusable="false"
-        android:focusableInTouchMode="false">
+        tools:context="com.example.benwi.assignment1.HistoryActivity"
+        tools:showIn="@layout/activity_history">
 
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
-            <LinearLayout
-                android:orientation="horizontal"
+            <TextView
+                android:text="Run"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true">
-
-                <ImageView
-                    android:layout_width="150dp"
-                    android:layout_height="150dp"
-                    app:srcCompat="@drawable/jogging"
-                    android:id="@+id/imageView3"
-                    android:layout_weight="1" />
-            </LinearLayout>
+                android:id="@+id/runTitle"
+                android:textAlignment="center"
+                android:textSize="24sp"
+                android:textColor="@android:color/black" />
 
             <LinearLayout
                 android:orientation="horizontal"
@@ -62,7 +53,7 @@
                         android:text="Time elapsed:"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/timeText"
+                        android:id="@+id/timeTextH"
                         android:textAlignment="viewStart"
                         android:textColor="@android:color/black" />
 
@@ -70,7 +61,7 @@
                         android:text="00:00:00"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/timerValue"
+                        android:id="@+id/timerValueH"
                         android:textAlignment="viewStart"
                         android:textColor="@android:color/black" />
 
@@ -87,7 +78,7 @@
                         android:text="Calories burned:"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
-                        android:id="@+id/caloriesText"
+                        android:id="@+id/caloriesTextH"
                         android:textAlignment="center"
                         android:layout_weight="1"
                         android:textColor="@android:color/black" />
@@ -96,7 +87,7 @@
                         android:text="0.00"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/calorieValue"
+                        android:id="@+id/calorieValueH"
                         android:textAlignment="center"
                         android:textColor="@android:color/black" />
 
@@ -113,7 +104,7 @@
                         android:text="Distance:"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/distanceText"
+                        android:id="@+id/distanceTextH"
                         android:textAlignment="viewEnd"
                         android:textColor="@android:color/black" />
 
@@ -121,7 +112,7 @@
                         android:text="0.00 miles"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/distanceValue"
+                        android:id="@+id/distanceValueH"
                         android:textAlignment="viewEnd"
                         android:textColor="@android:color/black" />
 
@@ -129,64 +120,17 @@
 
             </LinearLayout>
 
-            <LinearLayout
-                android:orientation="horizontal"
+            <Button
+                android:text="DELETE RUN"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/linearLayout2"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="false">
-
-                <Button
-                    android:text="START RUN"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/startButton"
-                    android:layout_weight="1"
-                    android:onClick="startRun"
-                    android:backgroundTint="@android:color/holo_green_light" />
-
-                <Button
-                    android:text="PAUSE RUN"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/endButton"
-                    android:layout_weight="1"
-                    android:onClick="endRun"
-                    android:backgroundTint="@android:color/holo_red_light" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <Button
-                    android:text="SAVE RUN"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/saveButton"
-                    android:layout_weight="1"
-                    android:onClick="saveRun"
-                    android:backgroundTint="@android:color/holo_blue_light" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <ListView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:id="@+id/runList" />
-            </LinearLayout>
-
+                android:id="@+id/deleteButton"
+                android:backgroundTint="@android:color/holo_red_light" />
         </LinearLayout>
     </RelativeLayout>
 
     <ListView
-        android:id="@+id/navList"
+        android:id="@+id/navList3"
         android:layout_width="200dp"
         android:layout_height="match_parent"
         android:layout_gravity="left|start"

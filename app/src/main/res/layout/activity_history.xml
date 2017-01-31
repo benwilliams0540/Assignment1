@@ -2,7 +2,7 @@
 <android.support.v4.widget.DrawerLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/drawer_layout2"
+    android:id="@+id/drawer_layout3"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -12,15 +12,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
-        tools:context="com.example.benwi.assignment1.RunActivity">
+        tools:context="com.example.benwi.assignment1.HistoryActivity">
 
-        <include layout="@layout/content_run"
-            android:id="@+id/include" />
+        <include layout="@layout/content_history" />
+
 
     </android.support.design.widget.CoordinatorLayout>
 
     <ListView
-        android:id="@+id/navList"
+        android:id="@+id/navList3"
         android:layout_width="200dp"
         android:layout_height="match_parent"
         android:layout_gravity="left|start"

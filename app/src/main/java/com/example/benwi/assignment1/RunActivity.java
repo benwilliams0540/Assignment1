@@ -13,8 +13,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.HeaderViewListAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -40,12 +38,19 @@ public class RunActivity extends AppCompatActivity {
     private long updatedTime = 0L;
     private long startTime = 0L;
 
-    private float distanceMiles;
+    private float distanceMiles, distanceSwapBuff, updatedDistance;
     private float calories;
 
-    private static ArrayList<String> runHistory = new ArrayList<>();
-    private ArrayAdapter<String> adapter;
+    public static ArrayList<String> runHistory = new ArrayList<>();
+    public static ArrayAdapter<String> adapter;
     private ListView runList;
+
+    public static String runSelection;
+    public static long runTime;
+    public static float runDistance;
+    public static float runCalories;
+    public static int runPosition;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,21 +89,24 @@ public class RunActivity extends AppCompatActivity {
         runList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapter, View v, int position, long id){
-                String runSelection = (String) adapter.getItemAtPosition(position);
-                long runTime = MainActivity.sharedPreferences.getLong(MainActivity.profile.name + runSelection + "time", 0);
-                float runDistance = MainActivity.sharedPreferences.getFloat(MainActivity.profile.name + runSelection + "distance", 0);
-                float runCalories = MainActivity.sharedPreferences.getFloat(MainActivity.profile.name + runSelection + "calories", 0);
+                runPosition = position;
+                runSelection = (String) adapter.getItemAtPosition(position);
+                runTime = MainActivity.sharedPreferences.getLong(MainActivity.profile.name + runSelection + "time", 0);
+                runDistance = MainActivity.sharedPreferences.getFloat(MainActivity.profile.name + runSelection + "distance", 0);
+                runCalories = MainActivity.sharedPreferences.getFloat(MainActivity.profile.name + runSelection + "calories", 0);
 
                 Log.i("Selection", runSelection);
                 Log.i("Time", Long.toString(runTime));
                 Log.i("Distance", Float.toString(runDistance));
                 Log.i("Calories", Float.toString(runCalories));
+
+                startActivity(new Intent(RunActivity.this, HistoryActivity.class));
             }
         });
     }
 
     private  void initializeDrawer(){
-        mDrawerList = (ListView)findViewById(R.id.navList2);
+        mDrawerList = (ListView)findViewById(R.id.navList);
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id){
@@ -172,7 +180,6 @@ public class RunActivity extends AppCompatActivity {
         startTime = SystemClock.uptimeMillis();
         startLocation = MainActivity.currentLocation;
         endLocation = MainActivity.currentLocation;
-
         timeSwapBuff += timeInMilliseconds;
         customHandler.postDelayed(updateTimerThread, 0);
         customHandler.postDelayed(updateDistanceThread, 0);
@@ -182,6 +189,7 @@ public class RunActivity extends AppCompatActivity {
 
     public void endRun(View view){
         timeSwapBuff += timeInMilliseconds;
+        distanceSwapBuff += distanceMiles;
         endLocation = MainActivity.currentLocation;
         customHandler.removeCallbacks(updateTimerThread);
         customHandler.removeCallbacks(updateDistanceThread);
@@ -228,8 +236,10 @@ public class RunActivity extends AppCompatActivity {
         public void run(){
             endLocation = MainActivity.currentLocation;
             distanceMiles = startLocation.distanceTo(endLocation) * (float) 0.000621371;
+            updatedDistance = distanceMiles + distanceSwapBuff;
+            //distanceMiles += distanceSwapBuff;
 
-            distanceValue.setText("" + String.format("%.2f", distanceMiles) + " miles");
+            distanceValue.setText("" + String.format("%.2f", updatedDistance) + " miles");
             customHandler.postDelayed(this, 0);
         }
     };
@@ -237,7 +247,7 @@ public class RunActivity extends AppCompatActivity {
     private Runnable updateCaloriesThread = new Runnable() {
         @Override
         public void run() {
-            calories = (float) 0.72 * MainActivity.profile.weight * distanceMiles;
+            calories = (float) 0.72 * MainActivity.profile.weight * updatedDistance;
 
             if (calories > 1) {
                 calorieValue.setText("" + String.format("%.2f", calories));
