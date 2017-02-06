@@ -1,139 +1,124 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.DrawerLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/drawer_layout2"
+    android:id="@+id/content_history"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.example.benwi.assignment1.HistoryActivity"
+    tools:showIn="@layout/activity_history">
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/content_history"
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingBottom="@dimen/activity_vertical_margin"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/activity_vertical_margin"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:context="com.example.benwi.assignment1.HistoryActivity"
-        tools:showIn="@layout/activity_history">
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:text="Run"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/runTitle"
+            android:textAlignment="center"
+            android:textSize="24sp"
+            android:textColor="@android:color/black" />
 
         <LinearLayout
-            android:orientation="vertical"
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:text="Run"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/runTitle"
-                android:textAlignment="center"
-                android:textSize="24sp"
-                android:textColor="@android:color/black" />
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/linearLayout"
+            android:layout_centerHorizontal="true"
+            android:paddingTop="5dp">
 
             <LinearLayout
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/linearLayout"
-                android:layout_centerHorizontal="true"
-                android:paddingTop="5dp">
+                android:layout_weight="1"
+                android:layout_gravity="left|fill_horizontal|clip_horizontal">
 
-                <LinearLayout
-                    android:orientation="vertical"
+                <TextView
+                    android:text="Time elapsed:"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_gravity="left|fill_horizontal|clip_horizontal">
+                    android:id="@+id/timeTextH"
+                    android:textAlignment="viewStart"
+                    android:textColor="@android:color/black" />
 
-                    <TextView
-                        android:text="Time elapsed:"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/timeTextH"
-                        android:textAlignment="viewStart"
-                        android:textColor="@android:color/black" />
-
-                    <TextView
-                        android:text="00:00:00"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/timerValueH"
-                        android:textAlignment="viewStart"
-                        android:textColor="@android:color/black" />
-
-                </LinearLayout>
-
-                <LinearLayout
+                <TextView
+                    android:text="00:00:00"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_gravity="fill_horizontal|center|clip_horizontal"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:text="Calories burned:"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:id="@+id/caloriesTextH"
-                        android:textAlignment="center"
-                        android:layout_weight="1"
-                        android:textColor="@android:color/black" />
-
-                    <TextView
-                        android:text="0.00"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/calorieValueH"
-                        android:textAlignment="center"
-                        android:textColor="@android:color/black" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_gravity="right|fill_horizontal|clip_horizontal">
-
-                    <TextView
-                        android:text="Distance:"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/distanceTextH"
-                        android:textAlignment="viewEnd"
-                        android:textColor="@android:color/black" />
-
-                    <TextView
-                        android:text="0.00 miles"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/distanceValueH"
-                        android:textAlignment="viewEnd"
-                        android:textColor="@android:color/black" />
-
-                </LinearLayout>
+                    android:id="@+id/timerValueH"
+                    android:textAlignment="viewStart"
+                    android:textColor="@android:color/black" />
 
             </LinearLayout>
 
-            <Button
-                android:text="DELETE RUN"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/deleteButton"
-                android:backgroundTint="@android:color/holo_red_light" />
+                android:layout_weight="1"
+                android:layout_gravity="fill_horizontal|center|clip_horizontal"
+                android:orientation="vertical">
+
+                <TextView
+                    android:text="Calories burned:"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:id="@+id/caloriesTextH"
+                    android:textAlignment="center"
+                    android:layout_weight="1"
+                    android:textColor="@android:color/black" />
+
+                <TextView
+                    android:text="0.00"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/calorieValueH"
+                    android:textAlignment="center"
+                    android:textColor="@android:color/black" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="right|fill_horizontal|clip_horizontal">
+
+                <TextView
+                    android:text="Distance:"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/distanceTextH"
+                    android:textAlignment="viewEnd"
+                    android:textColor="@android:color/black" />
+
+                <TextView
+                    android:text="0.00 miles"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/distanceValueH"
+                    android:textAlignment="viewEnd"
+                    android:textColor="@android:color/black" />
+
+            </LinearLayout>
+
         </LinearLayout>
-    </RelativeLayout>
 
-    <ListView
-        android:id="@+id/navList3"
-        android:layout_width="200dp"
-        android:layout_height="match_parent"
-        android:layout_gravity="left|start"
-        android:background="#ffeeeeee"/>
-
-</android.support.v4.widget.DrawerLayout>
+        <Button
+            android:text="DELETE RUN"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/deleteButton"
+            android:backgroundTint="@android:color/holo_red_light"
+            android:onClick="deleteRun" />
+    </LinearLayout>
+</RelativeLayout>

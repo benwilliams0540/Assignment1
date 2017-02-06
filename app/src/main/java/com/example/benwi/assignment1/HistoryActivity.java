@@ -1,28 +1,17 @@
 package com.example.benwi.assignment1;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
 public class HistoryActivity extends AppCompatActivity {
-    private ListView mDrawerList;
-    private ArrayAdapter<String> mAdapter;
-    private ActionBarDrawerToggle mDrawerToggle;
-    private DrawerLayout mDrawerLayout;
-
     private TextView timerValue;
     private TextView distanceValue;
     private TextView calorieValue;
@@ -33,7 +22,8 @@ public class HistoryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
 
-        initializeDrawer();
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setTitle("Run Tracker");
 
         runTitle = (TextView) findViewById(R.id.runTitle);
         timerValue = (TextView) findViewById(R.id.timerValueH);
@@ -41,81 +31,54 @@ public class HistoryActivity extends AppCompatActivity {
         calorieValue = (TextView) findViewById(R.id.calorieValueH);
 
         runTitle.setText(RunActivity.runSelection);
-        timerValue.setText("" + RunActivity.runTime);
-        distanceValue.setText("" + RunActivity.runDistance);
-        calorieValue.setText("" + RunActivity.runTime);
+        int secs = (int) (RunActivity.runTime / 1000);
+        int mins = secs / 60;
+        secs = secs % 60;
+        int milliseconds = (int) (RunActivity.runTime % 1000);
+        if (mins < 10) {
+            timerValue.setText("0" + mins + ":" + String.format("%02d", secs) + ":"
+                    + String.format("%02d", milliseconds));
+        }
+        else {
+            timerValue.setText("" + mins + ":" + String.format("%02d", secs) + ":"
+                    + String.format("%02d", milliseconds));
+        }
+
+        distanceValue.setText("" + String.format("%.2f", RunActivity.runDistance) + " miles");
+
+        calorieValue.setText("" + String.format("%.2f", RunActivity.runCalories));
 
     }
 
     @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        mDrawerToggle.syncState();
-    }
-
-    private  void initializeDrawer(){
-        mDrawerList = (ListView)findViewById(R.id.navList3);
-        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id){
-                switch (position){
-                    case 0:
-                        startActivity(new Intent(HistoryActivity.this, InfoActivity.class));
-                        break;
-                    case 1:
-                        startActivity(new Intent(HistoryActivity.this, InfoActivity.class));
-                        break;
-                }
-            }
-        });
-        mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout3);
-
-        addDrawerItems();
-        setupDrawer();
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setTitle("Run Tracker");
-    }
-
-    private void addDrawerItems() {
-        String[] menuItems = {"Information"};
-        mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, menuItems);
-        mDrawerList.setAdapter(mAdapter);
-    }
-
-    private void setupDrawer() {
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-                getSupportActionBar().setTitle("Navigation");
-                invalidateOptionsMenu();
-            }
-
-            public void onDrawerClosed(View view) {
-                super.onDrawerClosed(view);
-                getSupportActionBar().setTitle("Run Tracker");
-                invalidateOptionsMenu();
-            }
-        };
-
-        mDrawerToggle.setDrawerIndicatorEnabled(true);
-        mDrawerLayout.addDrawerListener(mDrawerToggle);
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        super.onOptionsItemSelected(item);
-
-        if (mDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
+        switch (item.getItemId()) {
+            case R.id.appInfo:
+                startActivity(new Intent(HistoryActivity.this, InfoActivity.class));
         }
         return false;
     }
 
-    private void deleteRun(View view){
-        RunActivity.runHistory.remove(RunActivity.runPosition);
-        finish();
+    public void deleteRun(View view){
+        new AlertDialog.Builder(this)
+                .setIcon(android.R.drawable.ic_delete)
+                .setTitle("Are you sure you want to delete this run?")
+                .setMessage("This action cannot be undone")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        RunActivity.runHistory.remove(RunActivity.runPosition);
+                        RunActivity.adapter.notifyDataSetChanged();
+                        finish();
+                    }
+                })
+                .setNegativeButton("No", null)
+                .show();
     }
-
 }

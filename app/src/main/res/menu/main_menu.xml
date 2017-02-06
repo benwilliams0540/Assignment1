@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item android:title="Information"
-        android:id="@+id/appInfo" />
+        android:id="@+id/appInfo" />\
     <item android:title="Settings"
         android:id="@+id/appSettings" />
 </menu>

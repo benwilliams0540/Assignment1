@@ -13,16 +13,14 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.HeaderViewListAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -33,11 +31,6 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     public static SharedPreferences sharedPreferences;
-
-    private ListView mDrawerList;
-    private ArrayAdapter<String> mAdapter;
-    private ActionBarDrawerToggle mDrawerToggle;
-    private DrawerLayout mDrawerLayout;
 
     public static Location currentLocation;
     private LocationManager locationManager;
@@ -56,7 +49,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        initializeDrawer();
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setTitle("Run Tracker");
+
         initializeUsers();
         initializeGPS();
 
@@ -65,9 +60,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        mDrawerToggle.syncState();
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.appInfo:
+                startActivity(new Intent(MainActivity.this, InfoActivity.class));
+            case R.id.appSettings:
+                startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+        }
+        return false;
     }
 
     @Override
@@ -138,66 +144,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-    }
-
-    private void initializeDrawer(){
-        mDrawerList = (ListView)findViewById(R.id.navList);
-        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id){
-                switch (position){
-                    case 0:
-                        startActivity(new Intent(MainActivity.this, InfoActivity.class));
-                        break;
-                    case 1:
-                        startActivity(new Intent(MainActivity.this, InfoActivity.class));
-                        break;
-                }
-            }
-        });
-        mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
-
-        addDrawerItems();
-        setupDrawer();
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setTitle("Run Tracker");
-    }
-
-    private void addDrawerItems() {
-        String[] menuItems = {"Information"};
-        mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, menuItems);
-        mDrawerList.setAdapter(mAdapter);
-    }
-
-    private void setupDrawer() {
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-                getSupportActionBar().setTitle("Navigation");
-                invalidateOptionsMenu();
-            }
-
-            public void onDrawerClosed(View view) {
-                super.onDrawerClosed(view);
-                getSupportActionBar().setTitle("Run Tracker");
-                invalidateOptionsMenu();
-            }
-        };
-
-        mDrawerToggle.setDrawerIndicatorEnabled(true);
-        mDrawerLayout.addDrawerListener(mDrawerToggle);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        super.onOptionsItemSelected(item);
-
-        if (mDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-        return false;
     }
 
     private ListView getListView(){

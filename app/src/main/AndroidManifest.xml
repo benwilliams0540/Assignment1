@@ -20,15 +20,19 @@
         <activity
             android:name=".RunActivity"
             android:label="@string/title_activity_run"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".HistoryActivity"
             android:label="@string/title_activity_history"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".InfoActivity"
             android:label="@string/title_activity_info"
             android:theme="@style/AppTheme" />
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>
